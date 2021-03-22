@@ -22,25 +22,21 @@ sudo su - postgres -c "createuser -s odoo14"
 sudo wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bionic_amd64.deb
 sudo apt -y install ./wkhtmltox_0.12.6-1.bionic_amd64.deb
 
-# 2.- Instalar y Odoo en ambiente virtual de Python
-# Cambiarse al usuario de Odoo
-sudo su - odoo14
-# Clonar el código fuente de Odoo 14 desde Github
-git clone https://www.github.com/odoo/odoo --depth 1 --branch 14.0 /opt/odoo14/odoo
-# Crear un ambiente virtual de Python para Odoo. Será en la misma carpeta del usuario de odoo
+# 2.- Instalar Odoo en ambiente virtual de Python
+# Clonar el código fuente de Odoo 14 desde Github. (ejecutar como usuario odoo14)
+sudo -u odoo14 git clone https://www.github.com/odoo/odoo --depth 1 --branch 14.0 /opt/odoo14/odoo
+# Crear un ambiente virtual de Python para Odoo. Será en la misma carpeta del usuario de odoo. (ejecutar como usuario odoo14)
 cd /opt/odoo14
-python3 -m venv odoo-venv
-# Activar el ambiente virtual python
+sudo -u odoo14 python3 -m venv odoo-venv
+# Activar el ambiente virtual python.
 source odoo-venv/bin/activate
-# Instalar los requerimientos de odoo para python con pip3
-pip3 install wheel
-pip3 install -r odoo/requirements.txt
+# Instalar los requerimientos de odoo para python con pip3. (ejecutar como usuario odoo14)
+sudo -u odoo14 pip3 install wheel
+sudo -u odoo14 pip3 install -r odoo/requirements.txt
 # Desactivar el ambiente, tecleando
 deactivate
-# Crear directorio donde se alojarán los módulos de terceros
-mkdir /opt/odoo14/odoo-custom-addons
-# Regresar al usuario sudo
-exit
+# Crear directorio donde se alojarán los módulos de terceros. (ejecutar como usuario odoo14)
+sudo -u odoo14 mkdir /opt/odoo14/odoo-custom-addons
 
 # 3.- Configurar "inicialmente" Odoo y crear servicio del mismo
 # Crear archivo de configuración
