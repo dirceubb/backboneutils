@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 # Instalar Odoo 14 en un ambiente virtual de python en Ubuntu 20.04 #
 # Este script se basa en la guía de Linuxize "How to Install Odoo 14 on Ubuntu 20.04" en la url https://linuxize.com/post/how-to-install-odoo-14-on-ubuntu-20-04/
 
@@ -90,3 +90,5 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now odoo14
 # Verificar Estado del servicio. Recomiendo pausa aqui, para que el administrador revise que el servicio esta arriba y que odoo ya esta trabajando
 sudo systemctl status odoo14
+
+set +x
