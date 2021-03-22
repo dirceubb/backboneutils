@@ -1,5 +1,8 @@
 #!/bin/bash
-set -x
+
+# Debuguear instalación y guardarlo en odoo14deploy.log
+exec 3> odoo14deploy.log
+
 # Instalar Odoo 14 en un ambiente virtual de python en Ubuntu 20.04 #
 # Este script se basa en la guía de Linuxize "How to Install Odoo 14 on Ubuntu 20.04" en la url https://linuxize.com/post/how-to-install-odoo-14-on-ubuntu-20-04/
 
@@ -28,13 +31,17 @@ sudo -u odoo14 git clone https://www.github.com/odoo/odoo --depth 1 --branch 14.
 # Crear un ambiente virtual de Python para Odoo. Será en la misma carpeta del usuario de odoo. (ejecutar como usuario odoo14)
 cd /opt/odoo14
 sudo -u odoo14 python3 -m venv odoo-venv
-# Activar el ambiente virtual python.
-source odoo-venv/bin/activate
-# Instalar los requerimientos de odoo para python con pip3. (ejecutar como usuario odoo14)
-sudo -u odoo14 pip3 install wheel
-sudo -u odoo14 pip3 install -r odoo/requirements.txt
-# Desactivar el ambiente, tecleando
-deactivate
+# Se debe "encapsular" dentro de una funcion los comandos necesarios para crear el ambiente virutal de python. Esto es por como funcionan los procesos de linux y el comando source
+requerimientos_venv () {
+        # Activar el ambiente virtual python
+        source odoo-venv/bin/activate
+        # Instalar los requerimientos de odoo para python con pip3. (ejecutar como usuario odoo14)
+        pip3 install wheel
+        pip3 install -r odoo/requirements.txt
+        # Desactivar el ambiente virtual python
+        deactivate
+}
+requerimientos_venv
 # Crear directorio donde se alojarán los módulos de terceros. (ejecutar como usuario odoo14)
 sudo -u odoo14 mkdir /opt/odoo14/odoo-custom-addons
 
@@ -90,5 +97,3 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now odoo14
 # Verificar Estado del servicio. Recomiendo pausa aqui, para que el administrador revise que el servicio esta arriba y que odoo ya esta trabajando
 sudo systemctl status odoo14
-
-set +x
