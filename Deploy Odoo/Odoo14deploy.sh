@@ -41,7 +41,7 @@ sudo -u odoo14 mkdir /opt/odoo14/odoo-custom-addons
 # 3.- Configurar "inicialmente" Odoo y crear servicio del mismo
 # Crear archivo de configuración
 # Nota: en futuras versiones del script es importante que los parámetros del archivo .conf sean interactivos (Principalmente el admin_passwd)
-sudo cat <<EOT >> /etc/odoo14.conf
+sudo cat <<EOT > /etc/odoo14.conf
 [options]
 ; This is the password that allows database operations:
 admin_passwd = MonDongo4#
@@ -66,7 +66,7 @@ addons_path = /opt/odoo14/odoo/addons,/opt/odoo14/odoo-custom-addons
 ;list_db = False
 EOT
 # Crear archivo de Systemd para crear servicio odoo14
-sudo cat <<EOT >> /etc/systemd/system/odoo14.service
+sudo cat <<EOT > /etc/systemd/system/odoo14.service
 [Unit]
 Description=Odoo14
 Requires=postgresql.service
