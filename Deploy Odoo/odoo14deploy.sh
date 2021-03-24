@@ -1,10 +1,9 @@
 #!/bin/bash
 
-# Debuguear instalación y guardarlo en odoo14deploy.log
-exec 3> odoo14deploy.log
-
 # Instalar Odoo 14 en un ambiente virtual de python en Ubuntu 20.04 #
 # Este script se basa en la guía de Linuxize "How to Install Odoo 14 on Ubuntu 20.04" en la url https://linuxize.com/post/how-to-install-odoo-14-on-ubuntu-20-04/
+# Para debuguear instalación y guardarlo en odoo14deploy.log descomentar la linea de abajo
+# exec 3> odoo14deploy.log
 
 # 1.- Prerequisitos del sistema
 # Actualizar Linux
@@ -48,7 +47,7 @@ sudo -u odoo14 mkdir /opt/odoo14/odoo-custom-addons
 # 3.- Configurar "inicialmente" Odoo y crear servicio del mismo
 # Crear archivo de configuración
 # Nota: en futuras versiones del script es importante que los parámetros del archivo .conf sean interactivos (Principalmente el admin_passwd)
-sudo cat <<EOT > /etc/odoo14.conf
+sudo cat << EOT > /etc/odoo14.conf
 [options]
 ; This is the password that allows database operations:
 admin_passwd = MonDongo4#
@@ -73,7 +72,7 @@ addons_path = /opt/odoo14/odoo/addons,/opt/odoo14/odoo-custom-addons
 ;list_db = False
 EOT
 # Crear archivo de Systemd para crear servicio odoo14
-sudo cat <<EOT > /etc/systemd/system/odoo14.service
+sudo cat << EOT > /etc/systemd/system/odoo14.service
 [Unit]
 Description=Odoo14
 Requires=postgresql.service
