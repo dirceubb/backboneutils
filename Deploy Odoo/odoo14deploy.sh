@@ -59,8 +59,8 @@ addons_path = /opt/odoo14/odoo/addons,/opt/odoo14/odoo-custom-addons
 
 ;proxy_mode = True
 
-;limit_memory_hard = 2147483648
-;limit_memory_soft = 1020054732
+;limit_memory_hard = 1226078945
+;limit_memory_soft = 1021734454
 ;limit_request = 8192
 ;limit_time_cpu = 600
 ;limit_time_real = 1200
