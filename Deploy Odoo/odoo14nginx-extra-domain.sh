@@ -35,11 +35,11 @@ sudo certbot certonly --agree-tos --noninteractive --email $correo  --webroot -w
 sudo cat << EOT > /etc/nginx/sites-enabled/$dominio.conf
 
 # Odoo servers
-upstream odoo {
+upstream odoo_$dominio {
  server 127.0.0.1:8069;
 }
 
-upstream odoochat {
+upstream odoochat_$dominio {
  server 127.0.0.1:8072;
 }
 
@@ -93,13 +93,13 @@ server {
 
     # Handle longpoll requests
     location /longpolling {
-        proxy_pass http://odoochat;
+        proxy_pass http://odoochat_$dominio;
     }
 
     # Handle / requests
     location / {
        proxy_redirect off;
-       proxy_pass http://odoo;
+       proxy_pass http://odoo_$dominio;
     }
 
     # Cache static files
@@ -107,7 +107,7 @@ server {
         proxy_cache_valid 200 90m;
         proxy_buffering on;
         expires 864000;
-        proxy_pass http://odoo;
+        proxy_pass http://odoo_$dominio;
     }
 
     # Gzip
