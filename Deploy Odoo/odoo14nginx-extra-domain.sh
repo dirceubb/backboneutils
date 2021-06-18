@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Instalar y configurar nginx y crearle un certificado válido a al dominio que usará la bd de Odoo mediante letsencrypt.
-# También configura al modo proxy del odoo y se dejan configurados los workers para trabajar en sistema operativo pequeño (1 core y 2 gb ram)
+# Agregar un dominio en nginx y letsencrypt a una instancia existente de odoo
+# Este Script se ejecuta solamente si se ejecutó previamente el odoo14nginxdeploy.sh
 
 # 1.- Crear Variables necesarias para el script
 # Solicitar nombre de dominio al administrador
@@ -11,54 +11,7 @@ read dominio;
 echo -n "Correo electrónico: ";
 read correo;
 
-# Instalar nginx
-sudo apt update
-sudo apt -y install nginx
-sudo systemctl status nginx
-# Instalar certbot
-sudo apt -y install certbot
-sudo systemctl status certbot
-
-# 2.- Preconfigurar certbot y el serverblock de nginx para poder solicitar el certificado de letsencrypt
-# Crear claves de Diffie–Hellman (DH). Se usan claves de 2048 bits
-sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
-# Mapear las peticiones para .well-known/acme-challenge a un solo directorio, /var/lib/letsencrypt
-sudo mkdir -p /var/lib/letsencrypt/.well-known;
-sudo chgrp www-data /var/lib/letsencrypt;
-sudo chmod g+s /var/lib/letsencrypt;
-# Crear snippets "letsencrypt.conf" y ssl.conf, que se incluirán en todos los bloques de nginx. Esto para optimizar y reutilizar código
-# Nota: en esta cadena se usa el caracter de escape "\" para que escriba literalmente $uri y no lo tome como variable
-sudo cat << EOT > /etc/nginx/snippets/letsencrypt.conf
-location ^~ /.well-known/acme-challenge/ {
-    allow all;
-    root /var/lib/letsencrypt/;
-    default_type "text/plain";
-    try_files \$uri =404;
-}
-EOT
-sudo cat << EOT > /etc/nginx/snippets/ssl.conf
-ssl_dhparam /etc/ssl/certs/dhparam.pem;
-
-ssl_session_timeout 1d;
-ssl_session_cache shared:SSL:10m;
-ssl_session_tickets off;
-
-ssl_protocols TLSv1.2 TLSv1.3;
-ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
-ssl_prefer_server_ciphers on;
-
-ssl_stapling on;
-ssl_stapling_verify on;
-resolver 8.8.8.8 8.8.4.4 valid=300s;
-resolver_timeout 30s;
-
-add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-add_header X-Frame-Options SAMEORIGIN;
-add_header X-Content-Type-Options nosniff;
-EOT
-# Borrar Server Block "default"
-sudo rm /etc/nginx/sites-enabled/default
-sudo rm /etc/nginx/sites-available/default
+# 2.- Crear Server Block
 # Crear Server Block para el dominio y www
 sudo cat <<EOT > /etc/nginx/sites-available/$dominio.conf
 server {
@@ -162,34 +115,10 @@ server {
     gzip on;
 }
 EOT
+
 # Reiniciar nginx una vez más
 sudo systemctl restart nginx
 
-# 4.- Habilitar el proxy en la configuración de odoo asi como configurar los workers
-sudo cat << EOT > /etc/odoo14.conf
-[options]
-; This is the password that allows database operations:
-admin_passwd = MonDongo4#
-db_host = False
-db_port = False
-db_user = odoo14
-db_password = False
-addons_path = /opt/odoo14/odoo/addons,/opt/odoo14/odoo-custom-addons
-
-proxy_mode = True
-
-limit_memory_hard = 2147483648
-limit_memory_soft = 1020054732
-limit_request = 8192
-limit_time_cpu = 600
-limit_time_real = 1200
-max_cron_threads = 1
-workers = 2
-
-; Filtrar bases de datos por el comienzo de la url y quitar la lista de bases de datos
-;dbfilter = ^%h$
-;list_db = False
-EOT
 # Reiniciar Odoo
 sudo systemctl restart odoo14
 # Fin del script

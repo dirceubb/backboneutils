@@ -12,3 +12,5 @@ sudo ./odoo14deploy.sh
 # Si se requiere una implementación profesional se debe ejecutar el script odoo14nginxdeploy.sh para tener un certificado válido y la aplicación corriendo en modo proxy con buenos ajustes de workers
 
 wget https://raw.githubusercontent.com/dirceubb/backboneutils/main/Deploy%20Odoo/odoo14nginxdeploy.sh
+chmod u+x odoo14nginxdeploy.sh
+sudo ./odoo14nginxdeploy.sh
