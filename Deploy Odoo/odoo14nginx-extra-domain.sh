@@ -29,7 +29,7 @@ sudo systemctl status nginx
 
 # 3.- Obtener certificado de letsencrypt y configurar server block para que funcione con dicho certificado
 # Ejecutar el Certbot con el plugin webroot para obtener el certificado
-sudo certbot certonly --agree-tos --noninteractive --email $correo  --webroot -w /var/lib/letsencrypt/ -d $dominio -d www.$dominio
+sudo certbot certonly --agree-tos --noninteractive --email $correo  --webroot -w /var/lib/letsencrypt/ -d $dominio
 # Configurar server block para que funcione con Odoo
 # Nota se utilizan muchos "\" para que el archivo contenga las cadenas que comienzan con "$" y no lo tome como variable
 sudo cat << EOT > /etc/nginx/sites-enabled/$dominio.conf
@@ -49,20 +49,6 @@ server {
     server_name $dominio www.$dominio;
 
     include snippets/letsencrypt.conf;
-    return 301 https://$dominio\$request_uri;
-}
-
-# WWW -> NON WWW
-server {
-    listen 443 ssl http2;
-    server_name www.$dominio;
-
-    ssl_certificate /etc/letsencrypt/live/$dominio/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/$dominio/privkey.pem;
-    ssl_trusted_certificate /etc/letsencrypt/live/$dominio/chain.pem;
-    include snippets/ssl.conf;
-    include snippets/letsencrypt.conf;
-
     return 301 https://$dominio\$request_uri;
 }
 
