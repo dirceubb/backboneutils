@@ -12,11 +12,11 @@ echo -n "Correo electrónico: ";
 read correo;
 
 # 2.- Crear Server Block
-# Crear Server Block para el dominio y www
+# Crear Server Block para el dominio
 sudo cat <<EOT > /etc/nginx/sites-available/$dominio.conf
 server {
   listen 80;
-  server_name $dominio www.$dominio;
+  server_name $dominio;
 
   include snippets/letsencrypt.conf;
 }
@@ -46,7 +46,7 @@ upstream odoochat_$dominio {
 # HTTP -> HTTPS
 server {
     listen 80;
-    server_name $dominio www.$dominio;
+    server_name $dominio;
 
     include snippets/letsencrypt.conf;
     return 301 https://$dominio\$request_uri;
