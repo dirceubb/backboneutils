@@ -1,0 +1,3 @@
+# Actualizar correo de alerta de expiración de certificados
+
+certbot update_account --email yourname+1@example.com
